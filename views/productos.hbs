@@ -11,7 +11,8 @@
     </ul>
   </div>
   <div class="row s12">
-    <div class="col s6">
+    <div class="col s9">
+
       <form action="/api/producto" method="post">
         <div class="row s12">
           <div class="col s12">
@@ -33,7 +34,7 @@
         
         <div class="row s12">
           <div class="col s12">
-            <div class="input-field">
+            <div class="input-field select">
               <!-- <input name="imagen" type="text" class="validate" placeholder="Seleccionar imagen" id="imagen" onkeyup="deshabilitarBotonRegistro()"> -->
               <select name="thumbnail" id="thumbnail" onchange="deshabilitarBotonEnviar()">
                 <option value="" selected disabled></option>
@@ -52,11 +53,24 @@
           </div>
         </div>
 
+        <input type="number" name="id_producto" id="id_producto">
+
+        <div class="col s4">
+          <button type="button" id="guardar" class="waves-effect waves-light btn-small"><i class="material-icons ">save</i>Guardar</button>
+        </div>
+      
+        <div class="col s4">
+          <button type="reset" class="waves-effect waves-light btn-small blue lighten-4"><i class="material-icons ">clear</i>Cancelar</button>
+        </div>
+        
+        <div class="col s4">
+          <button type="button" id="eliminar" class="waves-effect waves-ligth btn-small pink darken-1"><i class="material-icons ">delete</i>Eliminar</button>
+        </div>
         
       </form>
     </div>
 
-    <div class="col s6">
+    <div class="col s3">
       <a href="/api/chat" class="waves-effect waves-ligth btn-large">
         <i class="material-icons ">chat_bubble_outline</i>
         Ir al Chat
@@ -76,7 +90,8 @@
     </thead>
     <tbody>
       {{#each productos}}
-        <tr>
+        <tr onclick="seleccionarProducto(this)">
+          <td>{{this.id_producto}}</td>
           <td>{{this.title}}</td>
           <td>{{this.price}}</td>
           <td><img src={{this.thumbnail}} class="rounded" width="50" height="50" /></td>

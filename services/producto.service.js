@@ -13,8 +13,9 @@ class ProductoServicio {
     return prod;
   }
 
-  async getOne ( id ) {
-    return await Producto.findOne({ id })    
+  async getOne ( id_producto ) {
+    let producto = await Producto.findOne({ id_producto }, {})  
+    return   producto
   }
 
   async add ( producto ) {
@@ -24,11 +25,11 @@ class ProductoServicio {
   }
 
   async update ( producto) {
-    return await Producto.updateOne( { id: producto.id }, { title: producto.title, price: producto.price, thumbnail: producto.thumbnail })    
+    return await Producto.updateOne( { id_producto: producto.id_producto }, { title: producto.title, price: producto.price, thumbnail: producto.thumbnail })    
   }
 
-  async delete ( id) {
-    return await Producto.deleteOne( {id })
+  async delete ( id_producto) {
+    return await Producto.deleteOne( {id_producto })
   }
 }
 

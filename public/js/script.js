@@ -4,6 +4,10 @@ let email = document.querySelector('#email')
 let title = document.querySelector('#title')
 let price = document.querySelector('#price')
 let thumbnail = document.querySelector('#thumbnail')
+let eliminar = document.querySelector('#eliminar')
+let guardar = document.querySelector('#guardar')
+let select = document.querySelectorAll('.select')
+let id_producto = document.querySelector('#id_producto')
 let btnRegistrarse = document.querySelector('#registrarse')
 let btnSalir = document.querySelector('#salir')
 let btnEnviar = document.querySelector('#enviar')
@@ -24,6 +28,8 @@ document.addEventListener('DOMContentLoaded', function() {
   var instances = M.FormSelect.init(elems);
 });
 
+eliminar.addEventListener('click', eliminarProducto)
+guardar.addEventListener('click', guardarProducto)
 
 
 function salir ()  {
@@ -35,8 +41,6 @@ function salir ()  {
     .catch( err => console.log(err))
     
 }
-
-
 
 function deshabilitarBotonRegistro () {
   if(usuario.value != '' && password.value != '' && email.value != '') {
@@ -101,7 +105,6 @@ function crearMensaje ( mensaje ) {
   lista.appendChild(li)
 }
 
-
 let socket = io()
 let sessionID = null
 
@@ -127,3 +130,87 @@ socket.on('connect', () => {
     // crearMensaje(data)
   })
 })
+
+function seleccionarProducto ( fila ) {
+  let columnas = fila.getElementsByTagName('td')
+
+  id_producto.value = columnas[0].innerText
+  title.value = columnas[1].innerText
+  price.value = columnas[2].innerText
+  let src = columnas[3].getElementsByTagName('img')[0].src
+
+  let selectWrapper = select[0].getElementsByClassName('dropdown-content')
+  console.log(selectWrapper[0])
+  let itemsLista = selectWrapper[0].getElementsByTagName('li')
+
+  for(let i = 0 ; i < itemsLista.length ; i++) {
+    itemsLista[i].classList.remove('selected')
+    let imgList = itemsLista[i].getElementsByTagName('img')
+
+    if(imgList.src == src ) {
+      itemsLista[i].classList.add('selected')
+    }
+
+  }
+
+}
+
+function eliminarProducto (evt) {
+  evt.preventDefault()
+  console.log('eliminar')
+  fetch(`http://localhost:3232/api/producto/${id_producto.value}`, {
+    method: 'DELETE',
+  }).then( result => result.json())
+    .then( (data) => window.location.replace('http://localhost:3232/api/producto')
+    )
+    .catch( err => console.log(err))
+}
+
+function guardarProducto (evt) {
+  evt.preventDefault()
+
+  if(id_producto.value == "") {
+
+
+    let query = `
+      mutation addProducto($title: String, $price: Float, $thumbnail: String) {
+        addProducto(title: $title, price: $price, thumbnail: $thumbnail) {
+          id_producto,
+          title,
+          price,
+          thumbnail
+        }
+      }
+    
+    `
+
+    let variables = {
+      "title": title.value,
+      "price": Number(price.value),
+      "thumbnail": thumbnail.value
+    }
+
+    fetch(`http://localhost:3232/api/graphql`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({ query, variables })
+    }).then( result => result.json())
+      .then( () => window.location.replace('http://localhost:3232/api/producto'))
+      .catch( err => console.log(err))
+  } else {
+    fetch(`http://localhost:3232/api/producto`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id_producto: id_producto.value, title: title.value, price: price.value, thumbnail: thumbnail.value })
+    }).then( result => result.json())
+      .then( (data) => window.location.replace('http://localhost:3232/api/producto')
+      )
+      .catch( err => console.log(err))
+  }
+
+}
